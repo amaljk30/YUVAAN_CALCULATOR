@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yuvaan Health Insurance Policy — Premium Calculator & Underwriting Assistant | UIIC</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            uiic: {
+              navy: '#0F2C59',
+              dark: '#091D3E',
+              blue: '#0284C7',
+              light: '#E0F2FE',
+              accent: '#F59E0B',
+              surface: '#F8FAFC',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #F1F5F9; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #FFFFFF !important; }
+      .print-full { width: 100% !important; max-width: 100% !important; box-shadow: none !important; border: 1px solid #CBD5E1 !important; }
+    }
+  </style>
+</head>
+<body class="bg-uiic-surface text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+  <!-- Non-blocking Toast Banner (Replaces alert()) -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden transform transition-all duration-300 translate-y-2 opacity-0 no-print">
+    <div class="bg-uiic-navy text-white px-4 py-3 rounded-xl shadow-xl border border-sky-400/30 flex items-center gap-2.5 text-xs sm:text-sm font-medium">
+      <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span id="toast-msg">Notification</span>
+    </div>
+  </div>
+
+  <!-- Top Corporate Header -->
+  <header class="bg-gradient-to-r from-uiic-dark via-uiic-navy to-[#163E7A] text-white shadow-lg sticky top-0 z-40 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3.5">
+        <!-- Branding -->
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0 shadow-inner">
+            <svg class="w-6 h-6 text-sky-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-sky-300">United India Insurance Co. Ltd.</span>
+              <span class="text-[11px] bg-white/10 px-2 py-0.5 rounded-full text-slate-200 font-medium">IRDAI Reg. No. 545</span>
+              <span class="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-400/40">
+                0% GST / GST Exempt
+              </span>
+            </div>
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white mt-0.5">
+              Yuvaan Health Insurance Policy
+            </h1>
+            <p class="text-[11px] sm:text-xs text-sky-200">
+              UIN: <span class="font-mono font-semibold text-white">UIIHLIP26050V032526</span> &bull; Annual Premium Estimator & Underwriting Assistant
+            </p>
+          </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <nav class="flex bg-uiic-dark/80 p-1.5 rounded-xl border border-white/15 self-start lg:self-auto w-full sm:w-auto" role="tablist">
+          <button
+            id="tab-btn-calc"
+            onclick="switchTab('calc')"
+            class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all bg-white text-uiic-navy shadow-sm cursor-pointer"
+            role="tab"
+            aria-selected="true"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            <span>Premium Calculator</span>
+          </button>
+          <button
+            id="tab-btn-qa"
+            onclick="switchTab('qa')"
+            class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all text-slate-200 hover:text-white hover:bg-white/10 cursor-pointer"
+            role="tab"
+            aria-selected="false"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Product Doubt & Underwriting</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- =================================================================== -->
+    <!-- TAB 1: PREMIUM CALCULATOR (0% GST / GST EXEMPT)                     -->
+    <!-- =================================================================== -->
+    <section id="section-calc" class="space-y-6">
+
+      <!-- Prospectus Verification Presets & District Auto-Zone Bar -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-3.5 no-print">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500 mr-1">Prospectus Verification Presets:</span>
+          <button type="button" onclick="applyPreset('illus1_floater')" class="text-xs font-semibold bg-sky-50 hover:bg-sky-100 text-uiic-navy border border-sky-200 px-3 py-1.5 rounded-lg transition cursor-pointer">
+            Illus. 1 (Floater ₹19,932): Ages 36, 31, 10, 20 &bull; 10L
+          </button>
+          <button type="button" onclick="applyPreset('illus1_ind')" class="text-xs font-semibold bg-sky-50 hover:bg-sky-100 text-uiic-navy border border-sky-200 px-3 py-1.5 rounded-lg transition cursor-pointer">
+            Illus. 1 (Single Ind. ₹25,587)
+          </button>
+          <button type="button" onclick="applyPreset('illus2_floater')" class="text-xs font-semibold bg-sky-50 hover:bg-sky-100 text-uiic-navy border border-sky-200 px-3 py-1.5 rounded-lg transition cursor-pointer">
+            Illus. 2 (Floater ₹20,219): Ages 42, 38 &bull; 20L
+          </button>
+          <button type="button" onclick="applyPreset('illus2_ind')" class="text-xs font-semibold bg-sky-50 hover:bg-sky-100 text-uiic-navy border border-sky-200 px-3 py-1.5 rounded-lg transition cursor-pointer">
+            Illus. 2 (Single Ind. ₹25,611)
+          </button>
+          <button type="button" onclick="applyPreset('reset')" class="text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition cursor-pointer">
+            Reset
+          </button>
+        </div>
+
+        <!-- Quick City/District Lookup to Auto-Set Zone -->
+        <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 shrink-0">
+          <svg class="w-4 h-4 text-uiic-blue shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <input
+            type="text"
+            id="calc-city-input"
+            oninput="handleQuickCityLookup(this.value)"
+            placeholder="Type district/city to set Zone..."
+            class="bg-transparent text-xs text-slate-800 placeholder-slate-400 focus:outline-none w-44 sm:w-52"
+          />
+          <span id="calc-city-badge" class="text-[11px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-600 whitespace-nowrap">
+            Auto-Zone
+          </span>
+        </div>
+      </div>
+
+      <!-- Main 12-Column Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- LEFT 7 COLUMNS: POLICY CONFIGURATION & INSURED MEMBERS -->
+        <div class="lg:col-span-7 space-y-6 no-print">
+
+          <!-- Card 1: Policy Configuration -->
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="bg-slate-50/90 border-b border-slate-200 px-5 py-3.5 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <span class="w-6 h-6 rounded-full bg-uiic-navy text-white text-xs font-bold flex items-center justify-center">1</span>
+                <h2 class="font-bold text-uiic-navy text-base">Policy Configuration</h2>
+              </div>
+              <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                Annual Term &bull; 0% GST
+              </span>
+            </div>
+
+            <div class="p-5 space-y-5">
+              <!-- Policy Type & Shared Sum Insured -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Policy Type (Basis of Cover)</label>
+                  <div class="grid grid-cols-2 gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
+                    <button type="button" id="btn-type-floater" onclick="setPolicyType('floater')" class="py-2 px-3 rounded-lg text-xs font-bold transition bg-uiic-navy text-white shadow-sm cursor-pointer">
+                      Family Floater
+                    </button>
+                    <button type="button" id="btn-type-individual" onclick="setPolicyType('individual')" class="py-2 px-3 rounded-lg text-xs font-bold transition text-slate-600 hover:text-uiic-navy cursor-pointer">
+                      Individual Basis
+                    </button>
+                  </div>
+                  <p id="policy-type-hint" class="text-[11px] text-slate-500 mt-1.5">
+                    Single shared Sum Insured across the entire family.
+                  </p>
+                </div>
+
+                <!-- Sum Insured Selector -->
+                <div>
+                  <label id="si-section-label" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+                    Shared Sum Insured
+                  </label>
+                  <div class="grid grid-cols-2 gap-2">
+                    <button type="button" onclick="setDefaultSI(500000)" data-si="500000" class="si-btn py-2 px-2.5 rounded-xl border text-xs font-bold transition cursor-pointer">₹5,00,000</button>
+                    <button type="button" onclick="setDefaultSI(1000000)" data-si="1000000" class="si-btn py-2 px-2.5 rounded-xl border text-xs font-bold transition cursor-pointer">₹10,00,000</button>
+                    <button type="button" onclick="setDefaultSI(1500000)" data-si="1500000" class="si-btn py-2 px-2.5 rounded-xl border text-xs font-bold transition cursor-pointer">₹15,00,000</button>
+                    <button type="button" onclick="setDefaultSI(2000000)" data-si="2000000" class="si-btn py-2 px-2.5 rounded-xl border text-xs font-bold transition cursor-pointer">₹20,00,000</button>
+                  </div>
+                  <p id="room-rent-hint" class="text-[11px] text-slate-500 mt-1.5">
+                    Room Limit: <strong>₹3,000/day</strong> or Shared Accommodation (whichever is higher).
+                  </p>
+                </div>
+              </div>
+
+              <!-- Geographical Zone Selection -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <label class="text-xs font-bold uppercase tracking-wider text-slate-600">Geographical Zone (Proposer's Residence)</label>
+                  <button type="button" onclick="document.getElementById('zone-helper-drawer').classList.toggle('hidden')" class="text-xs font-semibold text-uiic-blue hover:underline cursor-pointer">
+                    Show/Hide District List
+                  </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  <button type="button" id="btn-zone-A" onclick="setZone('A')" class="zone-btn p-3 rounded-xl border text-left transition cursor-pointer">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-sm text-uiic-navy">Zone A</span>
+                      <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">0% Co-pay</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1">Delhi NCR, Mumbai MMR, Ahmedabad, Surat, Vadodara, Gandhinagar</p>
+                  </button>
+
+                  <button type="button" id="btn-zone-B" onclick="setZone('B')" class="zone-btn p-3 rounded-xl border text-left transition cursor-pointer">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-sm text-uiic-navy">Zone B</span>
+                      <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">10% in Zone A</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1">Bengaluru, Chennai, Hyderabad, Kolkata, Pune, Ernakulam, Jaipur, etc.</p>
+                  </button>
+
+                  <button type="button" id="btn-zone-C" onclick="setZone('C')" class="zone-btn p-3 rounded-xl border text-left transition cursor-pointer">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold text-sm text-uiic-navy">Zone C</span>
+                      <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-rose-100 text-rose-800">15% in Zone A</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1">Rest of India (All districts not in Zone A or Zone B)</p>
+                  </button>
+                </div>
+
+                <!-- Collapsible District Reference -->
+                <div id="zone-helper-drawer" class="hidden mt-3 p-3.5 bg-sky-50/80 border border-sky-200 rounded-xl text-xs text-slate-700 space-y-1.5">
+                  <p><strong class="text-uiic-navy">Zone A:</strong> All Districts in NCT of Delhi (incl. Shahdara), Faridabad, Palwal, Gurugram, Rohtak, Jhajjar, Ghaziabad, Gautam Buddh Nagar, Bulandshahr, Ahmedabad, Ahmedabad City, Gandhi Nagar, Vadodara, Surat, Mumbai, Mumbai Suburban, Thane, Raigad (MH), Palghar.</p>
+                  <p><strong class="text-uiic-navy">Zone B:</strong> Ahmed Nagar, Amritsar, Anand, Bengaluru, Bhopal, Chennai, Coimbatore, Dakshina Kannada, Ernakulam, Howrah, Hyderabad, Indore, Jaipur, Jalgaon, Jodhpur, Kanpur Nagar, Kheda, Kolhapur, Kolkata, Kottayam, Krishna, Lucknow, Ludhiana, Nagpur, Nashik, North 24 Parganas, Pune, Rajkot, Ranga Reddy, Solapur, Thiruvananthapuram, Tiruvallur, Valsad, Visakhapatnam.</p>
+                  <p><strong class="text-uiic-navy">Zone C:</strong> Rest of India.</p>
+                </div>
+              </div>
+
+              <!-- Optional Covers Row -->
+              <div class="pt-3 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Optional Cover 1: Waiver of Co-Payment -->
+                <div id="copay-waiver-box" class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 flex items-start gap-3">
+                  <input type="checkbox" id="chk-waiver-copay" onchange="recalculate()" class="mt-1 w-4 h-4 text-uiic-navy rounded border-slate-300 focus:ring-uiic-blue cursor-pointer" />
+                  <div class="flex-1">
+                    <label for="chk-waiver-copay" class="text-xs font-bold text-uiic-navy cursor-pointer block">
+                      Optional Cover 1: Waiver of Co-Payment
+                    </label>
+                    <p id="copay-waiver-note" class="text-[11px] text-slate-500 mt-0.5 leading-snug">
+                      Waives Zone B (10%) / Zone C (15%) co-pay for Zone A treatment by rating at Zone A rates.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Optional Cover 2: Daily Cash Allowance -->
+                <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70">
+                  <label for="select-daily-cash" class="text-xs font-bold text-uiic-navy block mb-1">
+                    Optional Cover 2: Daily Cash Allowance
+                  </label>
+                  <select id="select-daily-cash" onchange="recalculate()" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-uiic-blue">
+                    <option value="0">None (₹0 / member)</option>
+                    <option value="120">₹500/day — ₹120/member (Max ₹5,000/yr)</option>
+                    <option value="240">₹1,000/day — ₹240/member (Max ₹10,000/yr)</option>
+                    <option value="480">₹2,000/day — ₹480/member (Max ₹20,000/yr)</option>
+                  </select>
+                  <p class="text-[10px] text-slate-500 mt-1">Flat per member (irrespective of age/zone). 24-hr deductible/claim; no NCD.</p>
+                </div>
+              </div>
+
+              <!-- Discounts Row: Direct Channel Discount & No Claim Discount -->
+              <div class="pt-3 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Direct Channel Discount -->
+                <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70">
+                  <div class="flex items-center justify-between mb-1">
+                    <label for="input-direct-disc" class="text-xs font-bold text-uiic-navy">
+                      Direct Channel Discount (%)
+                    </label>
+                    <span class="text-[10px] font-semibold text-slate-500">Online / Direct Office</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="number"
+                      id="input-direct-disc"
+                      min="0"
+                      max="30"
+                      step="0.5"
+                      value="0"
+                      oninput="recalculate()"
+                      class="w-24 bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-uiic-blue
